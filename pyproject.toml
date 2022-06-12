@@ -16,6 +16,7 @@ dvc = {extras = ["gdrive"], version = "^2.11.0"}
 python-dotenv = "^0.20.0"
 openpyxl = "^3.0.10"
 tqdm = "^4.64.0"
+razdel = "^0.5.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
