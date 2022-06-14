@@ -15,7 +15,7 @@ defaults:
 
 # name of the run determines folder name in logs
 
-name: "log_reg_multiclass_char_nowb_ngram"
+name: "log_reg_multiclass_char_wb_ngram_1_7"
 
 train: True
 
@@ -42,5 +42,5 @@ data_transformer:
     - CountTransformer:
         _target_: rtk_mult_clf.CountVectorizerDF
         column_name: "text"
-        ngram_range: ${as_tuple:1,2}
-        analyzer: "char"
+        ngram_range: ${as_tuple:1,7}
+        analyzer: "char_wb"
