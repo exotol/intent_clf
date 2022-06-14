@@ -15,7 +15,7 @@ defaults:
 
 # name of the run determines folder name in logs
 
-name: "svc_multiclass_char_wb_ngram_1_7"
+name: "svc_multiclass_crammer_singer_char_wb_ngram_1_7"
 
 train: True
 
@@ -33,6 +33,8 @@ seed: 12345
 #
 model:
   _target_: sklearn.svm.LinearSVC
+  multi_class: crammer_singer
+
 
 data_transformer:
   _target_: rtk_mult_clf.make_pipeline
