@@ -10,5 +10,5 @@ steps_config: # use yaml list syntax to preserve to order
   - CountTransformer:
       _target_: rtk_mult_clf.CountVectorizerDF
       column_name: "text"
-      ngram_range: ${as_tuple:1,4}
-      analyzer: "char_wb"
+      #ngram_range: ${as_tuple:1,4}
+      #analyzer: "char_wb"
