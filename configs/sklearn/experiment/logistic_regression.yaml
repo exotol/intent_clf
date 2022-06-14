@@ -15,7 +15,7 @@ defaults:
 
 # name of the run determines folder name in logs
 
-name: "logistic_regression_multiclass"
+name: "logistic_regression_multiclass_word_ngram"
 
 train: True
 
@@ -31,5 +31,16 @@ seed: 12345
 #  max_epochs: 10
 #  gradient_clip_val: 0.5
 #
-#model:
-#  _target_: sklearn.naive_bayes.BernoulliNB
+model:
+  _target_: sklearn.linear_model.LogisticRegression
+  multi_class: "multinomial"
+
+data_transformer:
+  _target_: rtk_mult_clf.make_pipeline
+
+  steps_config: # use yaml list syntax to preserve to order
+    - CountTransformer:
+        _target_: rtk_mult_clf.CountVectorizerDF
+        column_name: "text"
+        ngram_range: ${as_tuple:1,2}
+#        analyzer: "char_wb"
