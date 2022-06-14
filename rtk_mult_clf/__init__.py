@@ -8,5 +8,6 @@ from .features.transformers import (
     IdentityTransformer,
     TextPreprocessTransformerDF,
     TfIdfVectorizerDF,
+    LaBSEVectorizer,
     make_pipeline,
 )

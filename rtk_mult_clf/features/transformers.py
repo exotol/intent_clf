@@ -6,6 +6,8 @@ import hydra
 import numpy as np
 import pandas as pd
 from omegaconf import DictConfig
+from tqdm import tqdm
+from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.pipeline import Pipeline
 
@@ -113,3 +115,29 @@ class IdentityTransformer:
 
     def transform(self, data: pd.DataFrame) -> pd.DataFrame:
         return data[[self.column_name]]
+
+
+class LaBSEVectorizer:
+
+    def __init__(self, column_name: str, **kwargs: Any):
+        self.column_name: str = column_name
+        path_to_model: str = kwargs.get(
+            "path_to_model",
+            'sentence-transformers/LaBSE'
+        )
+        self.model: SentenceTransformer = SentenceTransformer(
+            path_to_model
+        )
+
+    def fit(
+        self,
+        data: pd.DataFrame,
+        y: Optional[Union[pd.Series, np.ndarray]] = None,
+    ) -> IdentityTransformer:
+        # y: Optional[Union[pd.Series, np.ndarray]]
+        # необходим по требования Pipeline
+        return self
+
+    def transform(self, data: pd.DataFrame) -> np.ndarray:
+        text_list: List[str] = [text for text in data[self.column_name].values]
+        return self.model.encode(text_list, show_progress_bar=True)

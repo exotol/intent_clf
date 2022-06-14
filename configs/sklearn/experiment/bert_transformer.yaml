@@ -1,0 +1,48 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /datamodule: rtk
+  - override /model: logistic_regression
+  - override /checkpoints: local
+  - override /logger: wandb
+  - override /data_transformer: pipeline_cnt
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+# name of the run determines folder name in logs
+
+name: "svc_ms_csinger_tfidf_labse_embeddings"
+
+train: True
+
+optimized_metric: "precision"
+metric_aggregation: "micro"
+
+print_config: True
+ignore_warnings: False
+
+seed: 12345
+#trainer:
+#  min_epochs: 10
+#  max_epochs: 10
+#  gradient_clip_val: 0.5
+#
+model:
+  _target_: sklearn.svm.LinearSVC
+  multi_class: crammer_singer
+  max_iter: 5000
+
+
+data_transformer:
+  _target_: rtk_mult_clf.make_pipeline
+
+  steps_config: # use yaml list syntax to preserve to order
+
+    - LaBSEVectorizerTransformer:
+        _target_: rtk_mult_clf.LaBSEVectorizer
+        column_name: "text"
+        path_to_model: 'C:\Users\artex\.cache\torch\sentence_transformers\sentence-transformers_LaBSE'

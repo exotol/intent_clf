@@ -21,6 +21,7 @@ hydra-core = "^1.2.0"
 pytorch-lightning = "^1.6.4"
 hydra-colorlog = "^1.2.0"
 catboost = "^1.0.6"
+sentence-transformers = "^2.2.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
