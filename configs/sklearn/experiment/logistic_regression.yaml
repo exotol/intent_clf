@@ -15,7 +15,7 @@ defaults:
 
 # name of the run determines folder name in logs
 
-name: "log_reg_multiclass_char_wb_ngram_1_7"
+name: "log_reg_multiclass_tfidf_default"
 
 train: True
 
