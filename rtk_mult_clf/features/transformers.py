@@ -6,7 +6,7 @@ import hydra
 import numpy as np
 import pandas as pd
 from omegaconf import DictConfig
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.pipeline import Pipeline
 
 
@@ -50,3 +50,22 @@ class CountVectorizerDF:
 
     def transform(self, data: pd.DataFrame) -> Any:
         return self.count_vectorizer.transform(data[self.column_name].values)
+
+
+class TfIdfVectorizerDF:
+    def __init__(self, column_name: str, **kwargs: Any):
+        self.tfidf_vectorizer: TfidfVectorizer = TfidfVectorizer(**kwargs)
+        self.column_name: str = column_name
+
+    def fit(
+        self,
+        data: pd.DataFrame,
+        y: Optional[Union[pd.Series, np.ndarray]] = None,
+    ) -> TfIdfVectorizerDF:
+        # y: Optional[Union[pd.Series, np.ndarray]]
+        # необходим по требования Pipeline
+        self.tfidf_vectorizer.fit(data[self.column_name].values)
+        return self
+
+    def transform(self, data: pd.DataFrame) -> Any:
+        return self.tfidf_vectorizer.transform(data[self.column_name].values)
