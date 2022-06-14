@@ -288,9 +288,14 @@ def log_wandb_error_predictions(
 ) -> None:
     x_valid, y_valid = datamodule.get_val_data()
     predictions: List[float] = model.predict(pipeline.transform(x_valid))
-    prob_predictions: List[List[float]] = model.predict_proba(
-        pipeline.transform(x_valid)
-    )
+    if hasattr(model, 'predict_proba'):
+        prob_predictions: List[List[float]] = model.predict_proba(
+            pipeline.transform(x_valid)
+        )
+    else:
+        prob_predictions: List[List[float]] = model.decision_function(
+            pipeline.transform(x_valid)
+        )
     pd.options.mode.chained_assignment = None
     logic_index: pd.SupportsIndex = predictions != y_valid
     error_report: pd.DataFrame = x_valid.loc[logic_index]
