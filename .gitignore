@@ -305,3 +305,6 @@ cython_debug/
 /*.lock
 !/notebooks/eda/.ipynb_checkpoints/
 /notebooks/eda/.ipynb_checkpoints
+/models
+/predictions
+/wandb
