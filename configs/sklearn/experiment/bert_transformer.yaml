@@ -15,7 +15,7 @@ defaults:
 
 # name of the run determines folder name in logs
 
-name: "svc_ms_csinger_tfidf_labse_embeddings"
+name: "log_reg_labse_embeddings_max_iter_5000"
 
 train: True
 
@@ -32,8 +32,8 @@ seed: 12345
 #  gradient_clip_val: 0.5
 #
 model:
-  _target_: sklearn.svm.LinearSVC
-  multi_class: crammer_singer
+  _target_: sklearn.linear_model.LogisticRegression
+  multi_class: "multinomial"
   max_iter: 5000
 
 

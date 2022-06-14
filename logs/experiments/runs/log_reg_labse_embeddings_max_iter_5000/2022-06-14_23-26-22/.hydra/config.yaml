@@ -1,0 +1,36 @@
+original_work_dir: ${hydra:runtime.cwd}
+current_work_dir: ${hydra:run.dir}
+data_dir: ${original_work_dir}/data/
+name: log_reg_labse_embeddings_max_iter_5000
+train: true
+optimized_metric: precision
+metric_aggregation: micro
+print_config: true
+ignore_warnings: false
+model:
+  _target_: sklearn.linear_model.LogisticRegression
+  max_iter: 5000
+datamodule:
+  _target_: rtk_mult_clf.SklearnRTKDataModule
+  target_column: target
+  data_columns:
+  - text
+  data_dir: data/raw/
+  stratify: true
+  test_size: 0.22
+  shuffle: true
+  random_state: 100511
+logger:
+  init:
+    project: rtk_intent_clf
+    name: ${name}
+checkpoints:
+  path_to_checkpoints: models
+data_transformer:
+  _target_: rtk_mult_clf.make_pipeline
+  steps_config:
+  - LaBSEVectorizerTransformer:
+      _target_: rtk_mult_clf.LaBSEVectorizer
+      column_name: text
+      path_to_model: C:\Users\artex\.cache\torch\sentence_transformers\sentence-transformers_LaBSE
+seed: 12345
