@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, List
 
 import hydra
 import numpy as np
@@ -76,6 +76,7 @@ class TextPreprocessTransformerDF:
 
     def __init__(self, column_name: str, **kwargs: Any):
         self.column_name: str = column_name
+        self.stop_words: List[str] = kwargs.get("stop_words", [])
 
     def fit(
             self,
@@ -88,13 +89,16 @@ class TextPreprocessTransformerDF:
 
     def transform(self, data: pd.DataFrame) -> pd.DataFrame:
         data[self.column_name] = data[self.column_name].apply(
-            self.process_text
+            lambda sent: self.process_text(sent, self.stop_words)
         )
         return data
 
     @classmethod
-    def process_text(cls, text: str) -> str:
+    def process_text(cls, text: str, stop_words: List[str]) -> str:
         sent = []
         for _ in sentenize(text):
-            sent.extend([word.text for word in tokenize(_.text)])
+            sent.extend([
+                word.text for word in tokenize(_.text.lower())
+                if word.text not in stop_words
+            ])
         return " ".join(sent)

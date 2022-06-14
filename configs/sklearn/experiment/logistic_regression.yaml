@@ -15,7 +15,7 @@ defaults:
 
 # name of the run determines folder name in logs
 
-name: "log_reg_multiclass_prep_razdel_char_wb_ngram_1_7"
+name: "log_reg_multiclass_prep_razdel_stop_words_char_wb_ngram_1_7"
 
 train: True
 
@@ -42,6 +42,11 @@ data_transformer:
     - TextPreprocessTransformer:
         _target_: rtk_mult_clf.TextPreprocessTransformerDF
         column_name: "text"
+        stop_words:
+          - "здравству"
+          - "добры"
+          - "ден"
+          - "пожалуйс"
 
     - CountTransformer:
         _target_: rtk_mult_clf.CountVectorizerDF
