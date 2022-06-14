@@ -15,7 +15,7 @@ defaults:
 
 # name of the run determines folder name in logs
 
-name: "catboost_totalf1_multiclass_1000"
+name: "catboost_precision_tok_multiclass_100"
 
 train: True
 
@@ -31,25 +31,18 @@ seed: 12345
 #  max_epochs: 10
 #  gradient_clip_val: 0.5
 #
-tokenizer:
-  tokenizer_id: "Space"
-    separator_type: "ByDelimiter"
-    delimiter: " "
+
 
 model:
-  _target_: catboost.CatBoostClassifier
+  _target_: rtk_mult_clf.CatBoostWrapper
   text_features:
     - 'text'
   verbose: 50
   loss_function: 'MultiClass'
   eval_metric: 'TotalF1'
   task_type: 'CPU'
-  iterations: 1000
+  iterations: 100
   learning_rate: 0.2
-  text_processing:
-  tokenizers:
-    - - tokenizer:
-          - ${tokenizer}
 
 
 

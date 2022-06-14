@@ -1,0 +1,42 @@
+original_work_dir: ${hydra:runtime.cwd}
+current_work_dir: ${hydra:run.dir}
+data_dir: ${original_work_dir}/data/
+name: catboost_precision_tok_multiclass_100
+train: true
+optimized_metric: precision
+metric_aggregation: micro
+print_config: true
+ignore_warnings: false
+model:
+  _target_: rtk_mult_clf.CatBoostWrapper
+  text_features:
+  - text
+  verbose: 50
+  loss_function: MultiClass
+  eval_metric: TotalF1
+  task_type: CPU
+  iterations: 100
+  learning_rate: 0.2
+datamodule:
+  _target_: rtk_mult_clf.SklearnRTKDataModule
+  target_column: target
+  data_columns:
+  - text
+  data_dir: data/raw/
+  stratify: true
+  test_size: 0.22
+  shuffle: true
+  random_state: 100511
+logger:
+  init:
+    project: rtk_intent_clf
+    name: ${name}
+checkpoints:
+  path_to_checkpoints: models
+data_transformer:
+  _target_: rtk_mult_clf.make_pipeline
+  steps_config:
+  - IdentityTransformer:
+      _target_: rtk_mult_clf.IdentityTransformer
+      column_name: text
+seed: 12345
