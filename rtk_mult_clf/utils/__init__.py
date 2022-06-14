@@ -288,7 +288,7 @@ def log_wandb_error_predictions(
 ) -> None:
     x_valid, y_valid = datamodule.get_val_data()
     predictions: List[float] = model.predict(pipeline.transform(x_valid))
-    if hasattr(model, 'predict_proba'):
+    if hasattr(model, "predict_proba"):
         prob_predictions: List[List[float]] = model.predict_proba(
             pipeline.transform(x_valid)
         )

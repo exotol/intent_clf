@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional, Union, List
+from typing import Any, List, Optional, Union
 
 import hydra
 import numpy as np
@@ -72,15 +72,14 @@ class TfIdfVectorizerDF:
 
 
 class TextPreprocessTransformerDF:
-
     def __init__(self, column_name: str, **kwargs: Any):
         self.column_name: str = column_name
         self.stop_words: List[str] = kwargs.get("stop_words", [])
 
     def fit(
-            self,
-            data: pd.DataFrame,
-            y: Optional[Union[pd.Series, np.ndarray]] = None,
+        self,
+        data: pd.DataFrame,
+        y: Optional[Union[pd.Series, np.ndarray]] = None,
     ) -> TextPreprocessTransformerDF:
         # y: Optional[Union[pd.Series, np.ndarray]]
         # необходим по требования Pipeline
@@ -94,20 +93,19 @@ class TextPreprocessTransformerDF:
 
     @classmethod
     def process_text(cls, text: str, stop_words: List[str]) -> str:
-        return " ".join([
-            word for word in text.split() if word not in stop_words
-        ])
+        return " ".join(
+            [word for word in text.split() if word not in stop_words]
+        )
 
 
 class IdentityTransformer:
-
     def __init__(self, column_name: str, **kwargs: Any):
         self.column_name: str = column_name
 
     def fit(
-            self,
-            data: pd.DataFrame,
-            y: Optional[Union[pd.Series, np.ndarray]] = None,
+        self,
+        data: pd.DataFrame,
+        y: Optional[Union[pd.Series, np.ndarray]] = None,
     ) -> IdentityTransformer:
         # y: Optional[Union[pd.Series, np.ndarray]]
         # необходим по требования Pipeline
