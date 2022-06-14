@@ -6,6 +6,7 @@ import hydra
 import numpy as np
 import pandas as pd
 from omegaconf import DictConfig
+from razdel import tokenize, sentenize
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.pipeline import Pipeline
 
@@ -69,3 +70,31 @@ class TfIdfVectorizerDF:
 
     def transform(self, data: pd.DataFrame) -> Any:
         return self.tfidf_vectorizer.transform(data[self.column_name].values)
+
+
+class TextPreprocessTransformerDF:
+
+    def __init__(self, column_name: str, **kwargs: Any):
+        self.column_name: str = column_name
+
+    def fit(
+            self,
+            data: pd.DataFrame,
+            y: Optional[Union[pd.Series, np.ndarray]] = None,
+    ) -> TextPreprocessTransformerDF:
+        # y: Optional[Union[pd.Series, np.ndarray]]
+        # необходим по требования Pipeline
+        return self
+
+    def transform(self, data: pd.DataFrame) -> pd.DataFrame:
+        data[self.column_name] = data[self.column_name].apply(
+            self.process_text
+        )
+        return data
+
+    @classmethod
+    def process_text(cls, text: str) -> str:
+        sent = []
+        for _ in sentenize(text):
+            sent.extend([word.text for word in tokenize(_.text)])
+        return " ".join(sent)
