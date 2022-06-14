@@ -308,3 +308,4 @@ cython_debug/
 /models
 /predictions
 /wandb
+/catboost_info
