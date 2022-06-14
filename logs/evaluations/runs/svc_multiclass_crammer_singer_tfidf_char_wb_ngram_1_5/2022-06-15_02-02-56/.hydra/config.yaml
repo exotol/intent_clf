@@ -1,0 +1,19 @@
+original_work_dir: ${hydra:runtime.cwd}
+current_work_dir: ${hydra:run.dir}
+data_dir: ${original_work_dir}/data/
+print_config: true
+ignore_warnings: true
+seed: null
+name: svc_multiclass_crammer_singer_tfidf_char_wb_ngram_1_5
+ckpt_path: models/svc_multiclass_crammer_singer_tfidf_char_wb_ngram_1_5_precision_0.8978_.pkl
+predictions_path: predictions
+datamodule:
+  _target_: rtk_mult_clf.SklearnRTKDataModule
+  target_column: target
+  data_columns:
+  - text
+  data_dir: data/raw/
+  stratify: true
+  test_size: 0.22
+  shuffle: true
+  random_state: 100511
