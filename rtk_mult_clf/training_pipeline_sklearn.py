@@ -95,7 +95,7 @@ def train(config: DictConfig) -> Optional[float]:
     )
 
     utils.log_info_error_analysis(
-        model, pipeline, datamodule, config.logger.init.name, save_path
+        model, pipeline, datamodule, config.logger.init.name, save_path, score
     )
 
     # Return metric score for hyperparameter optimization

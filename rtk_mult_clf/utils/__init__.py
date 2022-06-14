@@ -1,6 +1,7 @@
 import logging
 import os
 import pickle
+import subprocess
 import warnings
 from argparse import Namespace
 from typing import Any, Dict, List, Optional, Sequence
@@ -319,12 +320,26 @@ def log_wandb_artifact(experiment_name: str, path_to_save_local: str) -> None:
     wandb.log_artifact(ckpts)
 
 
+def log_code_to_git(experiment_name: str, score: float) -> None:
+    command = ["git", "add", "*"]
+    not_ignored: bool = subprocess.run(command).returncode == 1
+    log.warning("Git add processed with error: {}".format(not_ignored))
+
+    experiment_msg: str = "Experiment {}, " "target score: {}".format(
+        experiment_name, score
+    )
+    command = ["git", "commit", "-m", experiment_msg]
+    not_ignored: bool = subprocess.run(command).returncode == 1
+    log.warning("Git add processed with error: {}".format(not_ignored))
+
+
 def log_info_error_analysis(
     model: BaseEstimator,
     pipeline: Pipeline,
     datamodule: SklearnRTKDataModule,
     experiment_name: str,
     path_to_save_local: str,
+    score: float,
 ) -> None:
     log.info("Info for Error Analysis!")
     log_wandb_confusion_matrix(model, pipeline, datamodule, experiment_name)
@@ -347,6 +362,7 @@ def log_info_error_analysis(
         experiment_name,
     )
     log_wandb_artifact(experiment_name, path_to_save_local)
+    log_code_to_git(experiment_name, score)
 
 
 def save_model(model: Dict[str, Any], save_path: str) -> str:

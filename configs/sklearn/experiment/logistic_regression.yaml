@@ -26,7 +26,6 @@ print_config: True
 ignore_warnings: False
 
 seed: 12345
-
 #trainer:
 #  min_epochs: 10
 #  max_epochs: 10
