@@ -7,5 +7,5 @@ model:
 data_transformer:
   _target_: rtk_mult_clf.make_pipeline
   steps_config:
-  - CountTransformer:
-      _target_: sklearn.feature_extraction.text.CountVectorizer
+    - CountTransformer:
+        _target_: sklearn.feature_extraction.text.CountVectorizer

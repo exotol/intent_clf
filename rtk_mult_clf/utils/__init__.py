@@ -1,30 +1,24 @@
-import os
 import logging
+import os
+import pickle
 import warnings
-import pandas as pd
+from argparse import Namespace
+from typing import Any, Dict, List, Optional, Sequence
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import pytorch_lightning as pl
 import rich.syntax
 import rich.tree
 import seaborn as sns
-import wandb
-import pickle
-from argparse import Namespace
 from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning.utilities import rank_zero_only
 from sklearn import metrics
 from sklearn.base import BaseEstimator
 from sklearn.pipeline import Pipeline
-from typing import (
-    List,
-    Sequence,
-    Dict,
-    Any,
-    Optional
-)
-from rtk_mult_clf import (
-    SklearnRTKDataModule
-)
+
+import wandb
+from rtk_mult_clf import SklearnRTKDataModule
 
 
 def get_logger(name=__name__) -> logging.Logger:
@@ -36,13 +30,13 @@ def get_logger(name=__name__) -> logging.Logger:
     # otherwise logs would get multiplied for each GPU
     # process in multi-GPU setup
     for level in (
-            "debug",
-            "info",
-            "warning",
-            "error",
-            "exception",
-            "fatal",
-            "critical",
+        "debug",
+        "info",
+        "warning",
+        "error",
+        "exception",
+        "fatal",
+        "critical",
     ):
         setattr(logger, level, rank_zero_only(getattr(logger, level)))
 
@@ -73,15 +67,15 @@ def extras(config: DictConfig) -> None:
 
 @rank_zero_only
 def print_config(
-        config: DictConfig,
-        print_order: Sequence[str] = (
-                "datamodule",
-                "model",
-                "callbacks",
-                "logger",
-                "trainer",
-        ),
-        resolve: bool = True,
+    config: DictConfig,
+    print_order: Sequence[str] = (
+        "datamodule",
+        "model",
+        "callbacks",
+        "logger",
+        "trainer",
+    ),
+    resolve: bool = True,
 ) -> None:
     """Prints content of DictConfig using Rich library and its tree structure.
 
@@ -100,7 +94,8 @@ def print_config(
 
     for field in print_order:
         queue.append(field) if field in config else log.info(
-            f"Field '{field}' not found in config")
+            f"Field '{field}' not found in config"
+        )
 
     for field in config:
         if field not in queue:
@@ -119,19 +114,16 @@ def print_config(
 
     rich.print(tree)
 
-    path_to_log: str = os.path.join(
-        config.current_work_dir,
-        "config_tree.log"
-    )
+    path_to_log: str = os.path.join(config.current_work_dir, "config_tree.log")
     with open(path_to_log, "w") as file:
         rich.print(tree, file=file)
 
 
 @rank_zero_only
 def log_hyper_parameters(
-        config: DictConfig,
-        model: pl.LightningModule,
-        trainer: pl.Trainer,
+    config: DictConfig,
+    model: pl.LightningModule,
+    trainer: pl.Trainer,
 ) -> None:
     """Controls which config parts are saved by Lightning loggers.
 
@@ -146,13 +138,13 @@ def log_hyper_parameters(
         "model": config["model"],
         "model/params/total": sum(p.numel() for p in model.parameters()),
         "model/params/trainable": sum(
-                   p.numel() for p in model.parameters() if p.requires_grad
+            p.numel() for p in model.parameters() if p.requires_grad
         ),
         "model/params/non_trainable": sum(
             p.numel() for p in model.parameters() if not p.requires_grad
         ),
         "datamodule": config["datamodule"],
-        "trainer": config["trainer"]
+        "trainer": config["trainer"],
     }
 
     # choose which parts of hydra config will be saved to loggers
@@ -169,7 +161,7 @@ def log_hyper_parameters(
 
 
 def finish(
-        logger: List[pl.loggers.LightningLoggerBase],
+    logger: List[pl.loggers.LightningLoggerBase],
 ) -> None:
     """Makes sure everything closed properly."""
 
@@ -182,59 +174,45 @@ def finish(
 
 
 def log_wandb_confusion_matrix(
-        model: BaseEstimator,
-        pipeline: Pipeline,
-        datamodule: SklearnRTKDataModule,
-        experiment_name: str
+    model: BaseEstimator,
+    pipeline: Pipeline,
+    datamodule: SklearnRTKDataModule,
+    experiment_name: str,
 ) -> None:
     x_valid, y_valid = datamodule.get_val_data()
 
     predictions: List[float] = model.predict(pipeline.transform(x_valid))
     confusion_matrix = metrics.confusion_matrix(
-        y_true=y_valid,
-        y_pred=predictions
+        y_true=y_valid, y_pred=predictions
     )
     plt.figure(figsize=(14, 8))
     sns.set(font_scale=1.4)
-    sns.heatmap(
-        confusion_matrix,
-        annot=True,
-        annot_kws={"size": 8}, fmt="g"
-    )
+    sns.heatmap(confusion_matrix, annot=True, annot_kws={"size": 8}, fmt="g")
     wandb.log(
-        {
-            f"confusion_matrix/{experiment_name}": wandb.Image(plt)
-        },
-        commit=False
+        {f"confusion_matrix/{experiment_name}": wandb.Image(plt)}, commit=False
     )
     # reset plot
     plt.clf()
 
 
 def log_wandb_precision_recall(
-        model: BaseEstimator,
-        pipeline: Pipeline,
-        datamodule: SklearnRTKDataModule,
-        experiment_name: str,
-        metric_aggregation: str
+    model: BaseEstimator,
+    pipeline: Pipeline,
+    datamodule: SklearnRTKDataModule,
+    experiment_name: str,
+    metric_aggregation: str,
 ) -> None:
     x_valid, y_valid = datamodule.get_val_data()
     predictions: List[float] = model.predict(pipeline.transform(x_valid))
 
     f1: float = metrics.f1_score(
-        y_valid,
-        predictions,
-        average=metric_aggregation
+        y_valid, predictions, average=metric_aggregation
     )
     recall: float = metrics.recall_score(
-        y_valid,
-        predictions,
-        average=metric_aggregation
+        y_valid, predictions, average=metric_aggregation
     )
     precision: float = metrics.precision_score(
-        y_valid,
-        predictions,
-        average=metric_aggregation
+        y_valid, predictions, average=metric_aggregation
     )
     data: List[List[float]] = [[f1], [precision], [recall]]
 
@@ -253,12 +231,10 @@ def log_wandb_precision_recall(
         yticklabels=["F1", "Precision", "Recall"],
     )
 
+    log_key: str = f"f1_p_r_heatmap/{experiment_name}/{metric_aggregation}"
     wandb.log(
-        {
-            f"f1_p_r_heatmap/{experiment_name}/{metric_aggregation}":
-                wandb.Image(plt)
-        },
-        commit=False
+        {log_key: wandb.Image(plt)},
+        commit=False,
     )
 
     # reset plot
@@ -266,10 +242,10 @@ def log_wandb_precision_recall(
 
 
 def log_wandb_classification_report(
-        model: BaseEstimator,
-        pipeline: Pipeline,
-        datamodule: SklearnRTKDataModule,
-        experiment_name: str,
+    model: BaseEstimator,
+    pipeline: Pipeline,
+    datamodule: SklearnRTKDataModule,
+    experiment_name: str,
 ) -> None:
     x_valid, y_valid = datamodule.get_val_data()
     predictions: List[float] = model.predict(pipeline.transform(x_valid))
@@ -279,7 +255,7 @@ def log_wandb_classification_report(
         predictions,
         labels=model.classes_,
         target_names=model.classes_,
-        output_dict=True
+        output_dict=True,
     )
 
     # set figure size
@@ -296,11 +272,7 @@ def log_wandb_classification_report(
     )
     plt.xticks(rotation=15)
     wandb.log(
-        {
-            f"clf_report/{experiment_name}":
-                wandb.Image(plt)
-        },
-        commit=False
+        {f"clf_report/{experiment_name}": wandb.Image(plt)}, commit=False
     )
 
     # reset plot
@@ -308,10 +280,10 @@ def log_wandb_classification_report(
 
 
 def log_wandb_error_predictions(
-        model: BaseEstimator,
-        pipeline: Pipeline,
-        datamodule: SklearnRTKDataModule,
-        experiment_name: str,
+    model: BaseEstimator,
+    pipeline: Pipeline,
+    datamodule: SklearnRTKDataModule,
+    experiment_name: str,
 ) -> None:
     x_valid, y_valid = datamodule.get_val_data()
     predictions: List[float] = model.predict(pipeline.transform(x_valid))
@@ -324,51 +296,43 @@ def log_wandb_error_predictions(
     error_report["target"] = y_valid.loc[logic_index]
     error_report["predictions"] = predictions[logic_index]
     columns: List[str] = [
-        "prob_0", "prob_1", "prob_2", "prob_3", "prob_4",
-        "prob_5", "prob_6", "prob_7", "prob_8", "prob_9", "prob_10"
+        "prob_0",
+        "prob_1",
+        "prob_2",
+        "prob_3",
+        "prob_4",
+        "prob_5",
+        "prob_6",
+        "prob_7",
+        "prob_8",
+        "prob_9",
+        "prob_10",
     ]
     error_report[columns] = prob_predictions[logic_index, :]
 
-    wandb.log(
-        {
-            f"error_report/{experiment_name}":
-                error_report
-        },
-        commit=False
-    )
+    wandb.log({f"error_report/{experiment_name}": error_report}, commit=False)
 
 
-def log_wandb_artifact(
-        experiment_name: str,
-        path_to_save_local: str
-) -> None:
+def log_wandb_artifact(experiment_name: str, path_to_save_local: str) -> None:
     ckpts: wandb.Artifact = wandb.Artifact(experiment_name, type="checkpoints")
     ckpts.add_file(path_to_save_local)
     wandb.log_artifact(ckpts)
 
 
 def log_info_error_analysis(
-        model: BaseEstimator,
-        pipeline: Pipeline,
-        datamodule: SklearnRTKDataModule,
-        experiment_name: str,
-        path_to_save_local: str
+    model: BaseEstimator,
+    pipeline: Pipeline,
+    datamodule: SklearnRTKDataModule,
+    experiment_name: str,
+    path_to_save_local: str,
 ) -> None:
     log.info("Info for Error Analysis!")
     log_wandb_confusion_matrix(model, pipeline, datamodule, experiment_name)
     log_wandb_precision_recall(
-        model,
-        pipeline,
-        datamodule,
-        experiment_name,
-        "micro"
+        model, pipeline, datamodule, experiment_name, "micro"
     )
     log_wandb_precision_recall(
-        model,
-        pipeline,
-        datamodule,
-        experiment_name,
-        "macro"
+        model, pipeline, datamodule, experiment_name, "macro"
     )
     log_wandb_classification_report(
         model,
@@ -382,10 +346,7 @@ def log_info_error_analysis(
         datamodule,
         experiment_name,
     )
-    log_wandb_artifact(
-        experiment_name,
-        path_to_save_local
-    )
+    log_wandb_artifact(experiment_name, path_to_save_local)
 
 
 def save_model(model: Dict[str, Any], save_path: str) -> str:

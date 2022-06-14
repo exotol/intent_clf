@@ -13,7 +13,7 @@ datamodule:
   _target_: rtk_mult_clf.SklearnRTKDataModule
   target_column: target
   data_columns:
-  - text
+    - text
   data_dir: data/raw/
   stratify: true
   test_size: 0.22
@@ -28,9 +28,9 @@ checkpoints:
 data_transformer:
   _target_: rtk_mult_clf.make_pipeline
   steps_config:
-  - CountTransformer:
-      _target_: rtk_mult_clf.CountVectorizerDF
-      column_name: text
-      ngram_range: ${as_tuple:1,4}
-      analyzer: char_wb
+    - CountTransformer:
+        _target_: rtk_mult_clf.CountVectorizerDF
+        column_name: text
+        ngram_range: ${as_tuple:1,4}
+        analyzer: char_wb
 seed: 12345
