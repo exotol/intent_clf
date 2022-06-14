@@ -15,7 +15,7 @@ defaults:
 
 # name of the run determines folder name in logs
 
-name: "log_reg_multiclass_stop_words_char_wb_ngram_1_7"
+name: "log_reg_multiclass_char_wb_ngram_1_7_max_iter_1000"
 
 train: True
 
@@ -34,19 +34,12 @@ seed: 12345
 model:
   _target_: sklearn.linear_model.LogisticRegression
   multi_class: "multinomial"
+  max_iter: 1000
 
 data_transformer:
   _target_: rtk_mult_clf.make_pipeline
 
   steps_config: # use yaml list syntax to preserve to order
-    - TextPreprocessTransformer:
-        _target_: rtk_mult_clf.TextPreprocessTransformerDF
-        column_name: "text"
-        stop_words:
-          - "здравству"
-          - "добры"
-          - "ден"
-          - "пожалуйс"
 
     - CountTransformer:
         _target_: rtk_mult_clf.CountVectorizerDF
