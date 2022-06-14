@@ -95,6 +95,10 @@ class TextPreprocessTransformerDF:
 
     @classmethod
     def process_text(cls, text: str, stop_words: List[str]) -> str:
-        return " ".join([
-            word for word in text.split() if word not in stop_words
-        ])
+        sent = []
+        for _ in sentenize(text):
+            sent.extend([
+                word.text for word in tokenize(_.text.lower())
+                if word.text not in stop_words
+            ])
+        return " ".join(sent)
