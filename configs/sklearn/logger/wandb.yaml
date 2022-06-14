@@ -1,0 +1,3 @@
+init:
+  project: "rtk_intent_clf"
+  name: ${name}

@@ -1,0 +1,14 @@
+# Hydra config file for the logistic_regression preprocessing steps
+_target_: rtk_mult_clf.make_pipeline
+
+#StepName:
+#    _target_: <class to instantiate the step>
+#    param1: <step's first parameter>
+#    param2: <step's second parameter, etc.>
+
+steps_config: # use yaml list syntax to preserve to order
+  - CountTransformer:
+      _target_: rtk_mult_clf.CountVectorizerDF
+      column_name: "text"
+      ngram_range: ${as_tuple:1,4}
+      analyzer: "char_wb"

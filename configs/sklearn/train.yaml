@@ -1,0 +1,33 @@
+defaults:
+  - _self_
+  - model: logistic_regression
+  - log_dir: debug
+  - datamodule: rtk
+  - logger: wandb
+  - checkpoints: local
+  - data_transformer: pipeline_cnt
+  - experiment: null
+
+  # enable color logging
+  - override hydra/hydra_logging: colorlog
+  - override hydra/job_logging: colorlog
+
+# path to original working directory
+# hydra hijacks working directory by changing it to the new log directory
+# https://hydra.cc/docs/next/tutorials/basic/running_your_app/working_directory
+original_work_dir: ${hydra:runtime.cwd}
+
+current_work_dir: ${hydra:run.dir}
+
+# path to folder with data
+data_dir: ${original_work_dir}/data/
+
+name: "sklearn_base"
+
+train: True
+
+optimized_metric: "precision"
+metric_aggregation: "micro"
+
+print_config: True
+ignore_warnings: True

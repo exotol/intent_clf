@@ -1,0 +1,9 @@
+_target_: rtk_mult_clf.SklearnRTKDataModule
+target_column: "target"
+data_columns:
+  - "text"
+data_dir: "data/raw/"
+stratify: True
+test_size: 0.22
+shuffle: True
+random_state: 100511
