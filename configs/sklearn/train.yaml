@@ -1,7 +1,7 @@
 defaults:
   - _self_
   - model: logistic_regression
-  - log_dir: debug
+  - log_dir: default
   - datamodule: rtk
   - logger: wandb
   - checkpoints: local

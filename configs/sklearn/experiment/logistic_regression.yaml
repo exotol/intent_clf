@@ -15,7 +15,7 @@ defaults:
 
 # name of the run determines folder name in logs
 
-name: "LogisticRegression, multiclass"
+name: "logistic_regression_multiclass"
 
 train: True
 
