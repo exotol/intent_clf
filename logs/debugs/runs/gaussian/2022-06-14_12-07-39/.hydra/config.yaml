@@ -1,0 +1,36 @@
+original_work_dir: ${hydra:runtime.cwd}
+data_dir: ${original_work_dir}/data/
+name: gaussian
+train: true
+optimized_metric: precision
+metric_aggregation: micro
+print_config: true
+ignore_warnings: true
+model:
+  _target_: sklearn.naive_bayes.GaussianNB
+  multi_class: multinomial
+datamodule:
+  _target_: rtk_mult_clf.SklearnRTKDataModule
+  target_column: target
+  data_columns:
+  - text
+  data_dir: data/raw/
+  stratify: true
+  test_size: 0.22
+  shuffle: true
+  random_state: 100511
+logger:
+  init:
+    project: rtk_intent_clf
+    name: ${name}
+checkpoints:
+  path_to_checkpoints: models
+data_transformer:
+  _target_: rtk_mult_clf.make_pipeline
+  steps_config:
+  - CountTransformer:
+      _target_: rtk_mult_clf.CountVectorizerDF
+      column_name: text
+      ngram_range: ${as_tuple:1,4}
+      analyzer: char_wb
+seed: 12345

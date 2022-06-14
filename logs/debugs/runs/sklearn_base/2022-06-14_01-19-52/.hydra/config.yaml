@@ -1,0 +1,25 @@
+original_work_dir: ${hydra:runtime.cwd}
+data_dir: ${original_work_dir}/data/
+name: sklearn_base
+train: true
+optimized_metric: precision
+metric_aggregation: micro
+model:
+  _target_: sklearn.linear_model.LogisticRegression
+  multi_class: multinomial
+datamodule:
+  _target_: rtk_mult_clf.SklearnRTKDataModule
+  target_column: target
+  data_columns:
+  - text
+  data_dir: data/raw/
+  stratify: true
+  test_size: 0.12
+  shuffle: true
+  random_state: 100511
+data_transformer:
+  _target_: rtk_mult_clf.make_pipeline
+  steps_config:
+  - CountTransformer:
+      _target_: rtk_mult_clf.CountVectorizerDF
+      column_name: text
