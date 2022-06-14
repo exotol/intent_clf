@@ -1,0 +1,63 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /datamodule: rtk
+  - override /model: logistic_regression
+  - override /checkpoints: local
+  - override /logger: wandb
+  - override /data_transformer: pipeline_cnt
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+# name of the run determines folder name in logs
+
+name: "catboost_totalf1_multiclass_1000"
+
+train: True
+
+optimized_metric: "precision"
+metric_aggregation: "micro"
+
+print_config: True
+ignore_warnings: False
+
+seed: 12345
+#trainer:
+#  min_epochs: 10
+#  max_epochs: 10
+#  gradient_clip_val: 0.5
+#
+tokenizer:
+  tokenizer_id: "Space"
+    separator_type: "ByDelimiter"
+    delimiter: " "
+
+model:
+  _target_: catboost.CatBoostClassifier
+  text_features:
+    - 'text'
+  verbose: 50
+  loss_function: 'MultiClass'
+  eval_metric: 'TotalF1'
+  task_type: 'CPU'
+  iterations: 1000
+  learning_rate: 0.2
+  text_processing:
+  tokenizers:
+    - - tokenizer:
+          - ${tokenizer}
+
+
+
+data_transformer:
+  _target_: rtk_mult_clf.make_pipeline
+
+  steps_config: # use yaml list syntax to preserve to order
+
+    - IdentityTransformer:
+        _target_: rtk_mult_clf.IdentityTransformer
+        column_name: "text"

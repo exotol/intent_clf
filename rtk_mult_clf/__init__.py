@@ -6,5 +6,6 @@ from .features.transformers import (
     CountVectorizerDF,
     TfIdfVectorizerDF,
     TextPreprocessTransformerDF,
+    IdentityTransformer,
     make_pipeline
 )
