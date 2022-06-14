@@ -15,7 +15,7 @@ defaults:
 
 # name of the run determines folder name in logs
 
-name: "svc_ms_csinger_tfidf_word_ngram_1_5"
+name: "svc_ms_csinger_tfidf_char_wb_ngram_1_5"
 
 train: True
 
@@ -46,4 +46,4 @@ data_transformer:
         _target_: rtk_mult_clf.TfIdfVectorizerDF
         column_name: "text"
         ngram_range: ${as_tuple:1,5}
-        analyzer: "word"
+        analyzer: "char_wb"
