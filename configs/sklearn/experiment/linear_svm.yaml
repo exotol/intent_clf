@@ -15,7 +15,7 @@ defaults:
 
 # name of the run determines folder name in logs
 
-name: "svc_ms_csinger_tfidf_char_wb_ngram_1_5_only_stop_word"
+name: "svc_ms_csinger_tfidf_word_ngram_1_3"
 
 train: True
 
@@ -41,16 +41,9 @@ data_transformer:
   _target_: rtk_mult_clf.make_pipeline
 
   steps_config: # use yaml list syntax to preserve to order
-    - TextPreprocessTransformer:
-        _target_: rtk_mult_clf.TextPreprocessTransformerDF
-        column_name: "text"
-        stop_words:
-          - "здравствуйте"
-          - "добрый"
-          - "день"
-          - "пожалуйста"
+
     - TfIdfTransformer:
         _target_: rtk_mult_clf.TfIdfVectorizerDF
         column_name: "text"
-        ngram_range: ${as_tuple:1,5}
-        analyzer: "char_wb"
+        ngram_range: ${as_tuple:1,3}
+        analyzer: "word"
