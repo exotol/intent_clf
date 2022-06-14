@@ -330,7 +330,7 @@ def log_code_to_git(experiment_name: str, score: float) -> None:
     )
     command = ["git", "commit", "-m", experiment_msg]
     not_ignored: bool = subprocess.run(command).returncode == 1
-    log.warning("Git add processed with error: {}".format(not_ignored))
+    log.warning("Git commit processed with error: {}".format(not_ignored))
 
 
 def log_info_error_analysis(
