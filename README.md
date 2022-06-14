@@ -65,8 +65,8 @@ SEED=<seed - необходим для воспроизводимости>
 * конфигурация эксперимента
 
 
-`python tasks/train_sklearn_model.py --config-dir F:\shad\projects\pet\rtk_mult_clf\configs\sklearn experiment=bert_transformer ~model.multi_class
-`
+`python tasks/train_sklearn_model.py --config-dir F:\shad\projects\pet\rtk_mult_clf\configs\sklearn experiment=bert_transformer ~model.multi_class`
+
 Таким образом, все работа с воспроизводимыми экспериментами сводится к
 изменению файлов конфигурации и запуску.
 Последующий трекинг эксперимента, логирование результатов: метрик, предсказаний, 
