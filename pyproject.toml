@@ -13,6 +13,9 @@ wandb = "^0.12.18"
 rich = "^12.4.4"
 torch = "^1.11.0"
 dvc = {extras = ["gdrive"], version = "^2.11.0"}
+python-dotenv = "^0.20.0"
+openpyxl = "^3.0.10"
+tqdm = "^4.64.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -25,6 +28,7 @@ pre-commit = "^2.19.0"
 isort = "^5.10.1"
 flake8 = "^4.0.1"
 nbstripout = "^0.5.0"
+wordcloud = {path = "wheels/wordcloud-1.8.1-cp39-cp39-win_amd64.whl"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
